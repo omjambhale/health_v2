@@ -4,19 +4,19 @@ from dotenv import load_dotenv
 # Load environment variables for local development
 load_dotenv()
 
-# API Configuration - works both locally and on Streamlit Cloud
-try:
-    import streamlit as st
-    # Try to get from Streamlit secrets first (for cloud deployment)
-    if hasattr(st, 'secrets') and "OPENAI_API_KEY" in st.secrets:
-        OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-    else:
-        # Fallback to environment variable (for local development)
-        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-except ImportError:
-    # If streamlit is not available, use environment variable
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# API Configuration - simplified for Streamlit Cloud
+def get_openai_api_key():
+    try:
+        import streamlit as st
+        # Check if we're in Streamlit Cloud environment
+        if hasattr(st, 'secrets'):
+            return st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+        else:
+            return os.getenv("OPENAI_API_KEY")
+    except:
+        return os.getenv("OPENAI_API_KEY")
 
+OPENAI_API_KEY = get_openai_api_key()
 OPENAI_MODEL = "gpt-4"
 
 # Storage Configuration
